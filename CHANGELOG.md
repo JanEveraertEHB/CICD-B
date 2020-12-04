@@ -10,7 +10,10 @@
 // Helper function for UUID added
 
 ```
-
+### CI
+```
+// github: adding github ci
+```
 ## V0.1.0
 
 ### Core
