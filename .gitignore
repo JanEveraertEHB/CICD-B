@@ -1,0 +1,10 @@
+\
+.env
+
+api/node_modules/*
+api/dist/*
+api/coverage/*
+node_modules/*
+
+.DS_Store
+DS_Store

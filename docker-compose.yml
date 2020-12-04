@@ -1,0 +1,26 @@
+
+version: '3'
+
+services:
+  api:
+    container_name: devBEX_api
+    build: './api'
+    environment:
+      POSTGRES_PASSWORD:
+      POSTGRES_USER:
+      POSTGRES_DB:
+      PORT: 
+    ports:
+      - PORT:80 # [local]:[exposed]
+
+  db:
+    container_name: devBEX_store   
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_PASSWORD:
+      POSTGRES_USER:
+      POSTGRES_DB:
+      POSTGRES_HOST_AUTH_METHOD:
+    ports:
+      - 5432:5432
