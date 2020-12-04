@@ -2,6 +2,9 @@
 
 ## V1.0.0
 
+```
+// chanign CI
+```
 ### Core
 ```
 // [GET] /question endpoint adapted to use AUTH
@@ -21,3 +24,4 @@
 
 ```
 // how to generate
+
