@@ -13,6 +13,7 @@ RUN npm install --quiet || cat npm-debug.log
 
 
 ENV PORT=3000
-ENV PG_CONNECTION_STRING=postgresql://doadmin:f2m2wic88ktjntqd@conversationdb-do-user-2476832-0.b.db.ondigitalocean.com:25060/defaultdb?ssl=true
+
+EXPOSE 3000
 
 CMD ["npm", "start"]
