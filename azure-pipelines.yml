@@ -26,6 +26,7 @@ stages:
   - job: Build
     displayName: Build
     pool:
+
       vmImage: $(vmImageName)
     steps:
     - task: Docker@2
@@ -34,7 +35,18 @@ stages:
         command: buildAndPush
         repository: $(imageRepository)
         dockerfile: $(dockerfilePath)
-        containerRegistry: $(dockerRegistryServiceConnection)
+        containerRegistry: 
         tags: |
           $(tag)
           latest
+
+    - task: AzureRmWebAppDeployment@4
+      inputs:
+        ConnectionType: 'AzureRM'
+        azureSubscription: 'Azure for Students(00084612-c485-4e32-afea-2332c488ffa3)'
+        appType: 'webAppContainer'
+        WebAppName: 'cicdb2'
+        DockerNamespace: '$(dockerRegistryServiceConnection)'
+        DockerRepository: '$(imageRepository)'
+        DockerImageTag: '$(tag)'
+        AppSettings: 'PORT=3000, WEBSITE_PORT=3000'
