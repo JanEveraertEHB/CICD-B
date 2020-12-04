@@ -23,7 +23,7 @@ const Conversationhelpers = {
         const v = wordList[splittedWords[word]];
         if (v) valueOfSentence *= v;
       }
-      return "hello" + valueOfSentence;
+      return valueOfSentence;
     }
     return null
   },
