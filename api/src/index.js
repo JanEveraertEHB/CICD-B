@@ -1,16 +1,11 @@
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser');
-const md5 = require('md5')
-const jwtToken = require('jsontokens')
 
 
 const ConversationHelpers = require('./helper/ConversationHelpers');
-const AuthHelper = require('./helper/AuthHelper');
 const DatabaseHelper = require('./helper/DatabaseHelper');
 const UUIDHelper = require('./helper/UuidHelpers');
-const { generateUUID } = require('./helper/UuidHelpers');
-const { await } = require('./helper/wordList');
 
 app.use(bodyParser.json());
 app.use(
@@ -24,7 +19,9 @@ app.get('/', (req, res) => {
   res.send('Hello World!')
 })
 
-//133b3df0-3ac5-11eb-8481-ab599d12075f
+
+
+
 
 app.get('/join', async (req, res) => {
   await DatabaseHelper
@@ -63,76 +60,10 @@ app.get('/question/:uuid', async (req, res) => {
     res.send(400)
   }
 })
-
-app.post('/register', async (req, res) => {
-  const userData = req.body;
-  if (userData && userData.email && userData.password) {
-    //check if user email validf
-    const regex = /^\S+@\S+\.\S+$/
-    if (regex.test(userData.email)) {
-      const pwd = md5(userData.password);
-      const uuid = UUIDHelper.generateUUID();
-      const toInsert = {
-        uuid,
-        email: userData.email,
-        password: pwd
-      };
-      await DatabaseHelper.table('users').insert(toInsert).returning('*').then((data) => {
-        res.send(data)
-      })
-        .catch((e) => {
-          res.status(401).send(e)
-        })
-    }
-    else {
-      res.status(400).send()
-    }
-  }
-  else {
-    res.status(400).send()
-  }
-})
-
-
-
-app.post('/login', async (req, res) => {
-  const userData = req.body;
-  if (userData && userData.email && userData.password) {
-    //check if user email validf
-    const regex = /^\S+@\S+\.\S+$/
-    if (regex.test(userData.email)) {
-      const pwd = md5(userData.password);
-
-
-      await DatabaseHelper.table('users').select(['uuid', 'email', 'roles']).where({ email: userData.email, password: pwd }).then((data) => {
-        // encrypt into id token
-        if (data.length == 0) {
-          res.status(400).send()
-        }
-        else {
-          const jwt = new jwtToken.TokenSigner('ES256K', process.env.PRIVATE_KEY).sign(data[0])
-          res.send(jwt)
-
-        }
-      })
-        .catch((e) => {
-          console.log(e)
-          res.status(401).send(e)
-        })
-    }
-    else {
-      res.status(400).send()
-    }
-  }
-  else {
-    res.status(400).send()
-  }
-})
-
 /**
 * 
 */
-app.post('/question', AuthHelper.tokenValidator, async (req, res) => {
+app.post('/question', async (req, res) => {
   const question = req.body.question;
   const response = await ConversationHelpers.senseEmotionHelper(question)
   const uuid = UUIDHelper.generateUUID();
@@ -160,7 +91,7 @@ app.post('/question', AuthHelper.tokenValidator, async (req, res) => {
 })
 
 
-app.patch('/question/:uuid', AuthHelper.tokenValidator, async (req, res) => {
+app.patch('/question/:uuid', async (req, res) => {
   if (req.params.uuid && req.body) {
     const toAlter = {};
     if (req.body.question) {
@@ -181,7 +112,7 @@ app.patch('/question/:uuid', AuthHelper.tokenValidator, async (req, res) => {
     res.sendStatus(400)
   }
 })
-app.delete('/question/:uuid', AuthHelper.tokenValidator, async (req, res) => {
+app.delete('/question/:uuid', async (req, res) => {
   if (req.params.uuid) {
     await DatabaseHelper.table('records').delete().where({ uuid: req.params.uuid }).returning('*').then((data) => {
       if (data.length > 0) {
