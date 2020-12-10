@@ -6,7 +6,7 @@ const func = {
         await db.schema
           .createTable('records', (table) => {
             table.increments();
-            table.uuid('uuid');
+            table.string('uuid');
             table.string('question');
             table.string('answer');
             table.string('user_id');
@@ -14,7 +14,10 @@ const func = {
           })
           .then(async () => {
             console.log('created table records');
-          });
+          })
+          .catch((e) => {
+            console.error(e)
+          })
       }
     })
 
@@ -33,7 +36,10 @@ const func = {
           })
           .then(async () => {
             console.log('created table users');
-          });
+          })
+          .catch((e) => {
+            console.error(e)
+          })
       }
     })
   }
