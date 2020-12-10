@@ -6,7 +6,7 @@
   "scripts": {
     "watch": "nodemon ./src/index.js",
     "start": "node ./src/index.js",
-    "test": "jest ./src --maxWorkers=1 --coverage --watchAll"
+    "test": "jest ./src --maxWorkers=1 --coverage"
   },
   "author": "",
   "license": "ISC",
