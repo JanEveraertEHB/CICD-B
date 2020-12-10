@@ -13,6 +13,16 @@ let ETE_uuid;
 
 describe('test end-to-end', () => {
 
+  //register
+
+  //login
+
+  //token bijhouden
+
+  // register second account
+
+  //login second 
+
   test('if post request succeeds', async (done) => {
     const response = await requestETE.post('/question').send({ "question": "are you evil" })
     expect(response.status).toBe(200)
@@ -85,5 +95,9 @@ describe('test end-to-end', () => {
     done();
   })
 
+
+  //remove account
+  //check if all is gone
+  //try login in agauin
 
 })

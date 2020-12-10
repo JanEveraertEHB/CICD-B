@@ -35,4 +35,33 @@ describe('test question endpoint', () => {
   })
 
 
+
+
+  test('if bad input resolves', async (done) => {
+    let response = await request.post('/register').send({ email: "Don't do this to me" })
+    expect(response.status).toBe(400)
+    response = await request.post('/register').send({})
+    expect(response.status).toBe(400)
+    response = await request.post('/register').send({ email: "email", password: "pas" })
+    expect(response.status).toBe(400)
+    response = await request.post('/register').send({ email: "test@test.be", password: "password" })
+    expect(response.status).toBe(200)
+
+    done();
+  })
+
+  test('if bad input resolves', async (done) => {
+    let response = await request.post('/login').send({ email: "Don't do this to me" })
+    expect(response.status).toBe(400)
+    response = await request.post('/login').send({})
+    expect(response.status).toBe(400)
+    response = await request.post('/login').send({ email: "email", password: "pas" })
+    expect(response.status).toBe(400)
+    response = await request.post('/login').send({ email: "test@test.be", password: "password" })
+    expect(response.status).toBe(200)
+    expect(response.body).toBe('eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJ1dWlkIjoiMTMzYjNkZjAtM2FjNS0xMWViLTg0ODEtYWI1OTlkMTIwNzVmIiwiZW1haWwiOiJ0ZXN0QHRlc3QuYmUiLCJyb2xlcyI6bnVsbH0.f-iia706Nlj7cO8m1eMjc7iVIS-XVemR4bBGdBbnjfpeSKu3RslVkC6fhvVLOdkCbmhHvTr_UKlTIjiNaZbrXQ')
+    done();
+  })
+
+
 })

@@ -6,7 +6,7 @@
   "scripts": {
     "watch": "nodemon ./src/index.js",
     "start": "node ./src/index.js",
-    "test": "jest ./src --maxWorkers=1 --coverage"
+    "test": "jest ./src --maxWorkers=1 --coverage --watchAll"
   },
   "author": "",
   "license": "ISC",
@@ -15,16 +15,18 @@
     "express": "^4.17.1",
     "fs": "0.0.1-security",
     "jest": "^26.6.3",
+    "jsontokens": "^3.0.0",
     "knex": "^0.21.12",
     "lodash": "^4.17.20",
+    "md5": "^2.3.0",
     "nodemon": "^2.0.6",
     "pg": "^8.5.1",
+    "sqlite3": "^5.0.0",
     "supertest": "^6.0.1",
     "uuid": "^8.3.1"
   },
   "jest": {
     "testPathIgnorePatterns": [
-      "/src/__tests__/integration/",
       "/node_modules/"
     ]
   }
