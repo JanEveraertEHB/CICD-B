@@ -26,6 +26,7 @@ stages:
   - job: Build
     displayName: Build
     pool:
+
       vmImage: $(vmImageName)
     steps:
     - task: Docker@2
@@ -34,7 +35,7 @@ stages:
         command: buildAndPush
         repository: $(imageRepository)
         dockerfile: $(dockerfilePath)
-        containerRegistry: $(dockerRegistryServiceConnection)
+        containerRegistry: 
         tags: |
           $(tag)
           latest
