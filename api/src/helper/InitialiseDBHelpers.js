@@ -1,8 +1,6 @@
 
 const func = {
   initialiseTables: async function (db) {
-    await db.schema.dropTable('records')
-    await db.schema.dropTable('users')
     await db.schema.hasTable('records').then(async (exists) => {
       if (!exists) {
         await db.schema
@@ -18,7 +16,7 @@ const func = {
             console.log('created table records');
           })
           .catch((e) => {
-            console.error(e)
+            // console.error(e)
           })
       }
 
@@ -41,7 +39,7 @@ const func = {
             console.log('created table users');
           })
           .catch((e) => {
-            console.error(e)
+            // console.error(e)
           })
       }
       // db.schema.raw("ALTER SEQUENCE seq RESTART WITH (SELECT (max(id) + 1) FROM users);")
