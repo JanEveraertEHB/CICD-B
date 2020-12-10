@@ -26,6 +26,8 @@ async function initialiseTables() {
         });
     }
   })
+
+
   await db.schema.hasTable('users').then(async (exists) => {
     if (!exists) {
       await db.schema
@@ -33,6 +35,7 @@ async function initialiseTables() {
           table.increments();
           table.uuid('uuid');
           table.string('email');
+          table.string('username');
           table.string('password');
           table.string('roles');
           table.timestamps(true, true);
