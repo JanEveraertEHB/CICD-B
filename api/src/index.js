@@ -7,8 +7,11 @@ const jwtToken = require('jsontokens')
 
 const ConversationHelpers = require('./helper/ConversationHelpers');
 const DatabaseHelper = require('./helper/DatabaseHelper');
+const InitialiseDBHelpers = require('./helper/InitialiseDBHelpers')
 const UUIDHelper = require('./helper/UuidHelpers');
 const AuthHelper = require('./helper/AuthHelper');
+
+InitialiseDBHelpers.initialiseTables(DatabaseHelper);
 
 app.use(bodyParser.json());
 app.use(
@@ -135,7 +138,8 @@ app.post('/question', AuthHelper.tokenValidator, async (req, res) => {
     const toInsertQuestion = {
       uuid: uuid,
       question: question,
-      answer: response.toString()
+      answer: response.toString(),
+      user_id: req.body.user.uuid
     }
     await DatabaseHelper.insert(toInsertQuestion).table('records').returning('*').then(async (data) => {
       if (response == null) {

@@ -7,12 +7,19 @@ const tempAppETE = require('../../index.js')
 const requestETE = supertestETE(tempAppETE)
 
 const DatabaseHelperETE = require('./../../helper/DatabaseHelper')
+const InitialiseTableHelpers = require('./../../helper/InitialiseDBHelpers')
+
 
 let ETE_uuid;
 let token = "";
 
 describe('test end-to-end', () => {
+  test('db starts', async (done) => {
+    const init = await InitialiseTableHelpers.initialiseTables(DatabaseHelperETE)
+    done();
+  })
   test('if register resolves', async (done) => {
+
     response = await requestETE.post('/register').send({ email: "test@test.be", username: "test", password: "pass" })
     expect(response.status).toBe(200)
     done();
