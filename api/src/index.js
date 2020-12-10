@@ -1,21 +1,21 @@
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser');
-const md5 = require('md5')
+const md5 = require('md5');
 const jwtToken = require('jsontokens')
 
 
 const ConversationHelpers = require('./helper/ConversationHelpers');
-const AuthHelper = require('./helper/AuthHelper');
 const DatabaseHelper = require('./helper/DatabaseHelper');
+const InitialiseDBHelpers = require('./helper/InitialiseDBHelpers')
 const UUIDHelper = require('./helper/UuidHelpers');
-const { generateUUID } = require('./helper/UuidHelpers');
-const { await } = require('./helper/wordList');
+const AuthHelper = require('./helper/AuthHelper');
+
+InitialiseDBHelpers.initialiseTables(DatabaseHelper);
 
 app.use(bodyParser.json());
 app.use(
   bodyParser.urlencoded({
-    // to support URL-encoded bodies
     extended: true
   })
 );
@@ -24,28 +24,92 @@ app.get('/', (req, res) => {
   res.send('Hello World!')
 })
 
-//133b3df0-3ac5-11eb-8481-ab599d12075f
+
+app.post('/login', async (req, res) => {
+  const uData = req.body;
+  if (uData && uData.password && uData.email) {
+    const regex = /^\S+@\S+\.\S+$/;
+    if (regex.test(uData.email)) {
+      const toMatch = {
+        email: uData.email,
+        password: md5(uData.password)
+      }
+      await DatabaseHelper.table('users').select(['uuid', 'username', 'email']).where(toMatch).then((data) => {
+        if (data.length == 0) {
+          res.status(401).send()
+        }
+        else {
+
+          jwt = new jwtToken.TokenSigner('ES256K', "private key").sign(data[0])
+          res.status(200).send(jwt)
+
+        }
+      })
+        .catch((e) => {
+          res.status(401).send(e)
+        })
+    }
+    else {
+      res.status(400).send()
+    }
+  }
+  else {
+    res.status(400).send()
+  }
+})
+
+
+
+app.post('/register', async (req, res) => {
+  const uData = req.body;
+  if (uData && uData.username && uData.password && uData.email) {
+    const regex = /^\S+@\S+\.\S+$/;
+    if (regex.test(uData.email)) {
+      // insert
+      const toInsert = {
+        uuid: UUIDHelper.generateUUID(),
+        username: uData.username,
+        email: uData.email,
+        password: md5(uData.password)
+      }
+      await DatabaseHelper.table('users').insert(toInsert).then((data) => {
+        res.status(200).send()
+      })
+        .catch((e) => {
+          res.status(401).send(e)
+        })
+    }
+    else {
+      res.status(400).send()
+    }
+  }
+  else {
+    res.status(400).send()
+  }
+})
+
+
 
 app.get('/join', async (req, res) => {
   await DatabaseHelper
-    .table('records')
-    .join('users', DatabaseHelper.raw('users.uuid::varchar'), 'records.user_id')
-    .select('records.*', 'users.email')
+    .table('items')
+    .join('lists', DatabaseHelper.raw('item.uuid::varchar'), 'lists.item_id')
+    .select('lists.*', 'items.*')
     .then((data) => {
       res.send(data)
     })
 
 })
 
-app.get('/questions', async (req, res) => {
-  await DatabaseHelper.table('records').select('*').then((data) => {
+app.get('/questions', AuthHelper.tokenValidator, async (req, res) => {
+  await DatabaseHelper.table('records').select('*').where({ user_id: req.body.user.uuid }).then((data) => {
     res.send(data);
   }).catch((error) => {
     res.send(error).status(400)
   })
 })
 
-app.get('/question/:uuid', async (req, res) => {
+app.get('/question/:uuid', AuthHelper.tokenValidator, async (req, res) => {
   if (req.params.uuid) {
     await DatabaseHelper.table('records').select('*').where({ uuid: req.params.uuid }).then((data) => {
       if (data.length > 0) {
@@ -63,72 +127,6 @@ app.get('/question/:uuid', async (req, res) => {
     res.send(400)
   }
 })
-
-app.post('/register', async (req, res) => {
-  const userData = req.body;
-  if (userData && userData.email && userData.password) {
-    //check if user email validf
-    const regex = /^\S+@\S+\.\S+$/
-    if (regex.test(userData.email)) {
-      const pwd = md5(userData.password);
-      const uuid = UUIDHelper.generateUUID();
-      const toInsert = {
-        uuid,
-        email: userData.email,
-        password: pwd
-      };
-      await DatabaseHelper.table('users').insert(toInsert).returning('*').then((data) => {
-        res.send(data)
-      })
-        .catch((e) => {
-          res.status(401).send(e)
-        })
-    }
-    else {
-      res.status(400).send()
-    }
-  }
-  else {
-    res.status(400).send()
-  }
-})
-
-
-
-app.post('/login', async (req, res) => {
-  const userData = req.body;
-  if (userData && userData.email && userData.password) {
-    //check if user email validf
-    const regex = /^\S+@\S+\.\S+$/
-    if (regex.test(userData.email)) {
-      const pwd = md5(userData.password);
-
-
-      await DatabaseHelper.table('users').select(['uuid', 'email', 'roles']).where({ email: userData.email, password: pwd }).then((data) => {
-        // encrypt into id token
-        if (data.length == 0) {
-          res.status(400).send()
-        }
-        else {
-          const jwt = new jwtToken.TokenSigner('ES256K', process.env.PRIVATE_KEY).sign(data[0])
-          res.send(jwt)
-
-        }
-      })
-        .catch((e) => {
-          console.log(e)
-          res.status(401).send(e)
-        })
-    }
-    else {
-      res.status(400).send()
-    }
-  }
-  else {
-    res.status(400).send()
-  }
-})
-
 /**
 * 
 */
@@ -140,18 +138,19 @@ app.post('/question', AuthHelper.tokenValidator, async (req, res) => {
     const toInsertQuestion = {
       uuid: uuid,
       question: question,
-      answer: response.toString()
+      answer: response.toString(),
+      user_id: req.body.user.uuid
     }
     await DatabaseHelper.insert(toInsertQuestion).table('records').returning('*').then(async (data) => {
       if (response == null) {
-        res.sendStatus(400)
+        res.sendStatus(402)
       }
       else {
         const answer = { ...ConversationHelpers.convertEmotionValue(response), uuid: uuid };
         res.send(answer);
       }
     }).catch((e) => {
-      res.status(400).send(e)
+      res.status(401).send(e)
     })
   }
   else {
