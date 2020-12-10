@@ -19,6 +19,8 @@ const func = {
             console.error(e)
           })
       }
+
+      db.schema.raw("ALTER SEQUENCE seq RESTART WITH (SELECT (max(id) + 1) FROM records);")
     })
 
 
@@ -41,6 +43,7 @@ const func = {
             console.error(e)
           })
       }
+      db.schema.raw("ALTER SEQUENCE seq RESTART WITH (SELECT (max(id) + 1) FROM users);")
     })
   }
 }
