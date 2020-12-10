@@ -1,11 +1,13 @@
 
 const func = {
   initialiseTables: async function (db) {
+    await db.schema.dropTable('records')
+    await db.schema.dropTable('users')
     await db.schema.hasTable('records').then(async (exists) => {
       if (!exists) {
         await db.schema
           .createTable('records', (table) => {
-            table.increments();
+            table.increments().primary();
             table.string('uuid');
             table.string('question');
             table.string('answer');
@@ -20,7 +22,6 @@ const func = {
           })
       }
 
-      db.schema.raw("ALTER SEQUENCE seq RESTART WITH (SELECT (max(id) + 1) FROM records);")
     })
 
 
@@ -28,7 +29,7 @@ const func = {
       if (!exists) {
         await db.schema
           .createTable('users', (table) => {
-            table.increments();
+            table.increments().primary();
             table.uuid('uuid');
             table.string('email');
             table.string('username');
@@ -43,7 +44,7 @@ const func = {
             console.error(e)
           })
       }
-      db.schema.raw("ALTER SEQUENCE seq RESTART WITH (SELECT (max(id) + 1) FROM users);")
+      // db.schema.raw("ALTER SEQUENCE seq RESTART WITH (SELECT (max(id) + 1) FROM users);")
     })
   }
 }

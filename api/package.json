@@ -6,7 +6,7 @@
   "scripts": {
     "watch": "nodemon ./src/index.js",
     "start": "nodemon ./src/index.js",
-    "test": "jest ./src --maxWorkers=1 --coverage"
+    "test": "jest ./src --maxWorkers=1 --coverage --detectOpenHandles"
   },
   "author": "",
   "license": "ISC",
