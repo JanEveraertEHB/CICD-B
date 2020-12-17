@@ -98,6 +98,7 @@ app.get('/join', async (req, res) => {
     .then((data) => {
       res.send(data)
     })
+
 })
 
 app.get('/questions', AuthHelper.tokenValidator, async (req, res) => {
