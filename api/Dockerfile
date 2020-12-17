@@ -1,5 +1,5 @@
 
-FROM node:15.3.0-alpine3.10
+FROM node:12.16-alpine3.10
 
 
 # COPY [local] [VM]
