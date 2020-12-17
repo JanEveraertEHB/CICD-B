@@ -4,9 +4,9 @@
 const supertest = require('supertest')
 const http = require('http');
 
-const tempApp = require('../index.js')
+const tempApp = require('../../index.js')
 const request = supertest(tempApp)
-const DatabaseHelperETE = require('./../helper/DatabaseHelper')
+const DatabaseHelperETE = require('../../helper/DatabaseHelper')
 let ETE_uuid;
 
 describe('test question endpoint', () => {
