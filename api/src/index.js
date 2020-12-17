@@ -11,8 +11,9 @@ const InitialiseDBHelpers = require('./helper/InitialiseDBHelpers')
 const UUIDHelper = require('./helper/UuidHelpers');
 const AuthHelper = require('./helper/AuthHelper');
 
-InitialiseDBHelpers.initialiseTables(DatabaseHelper);
-
+if (process.env.NODE_ENV == "dev") {
+  InitialiseDBHelpers.initialiseTables(DatabaseHelper);
+}
 app.use(bodyParser.json());
 app.use(
   bodyParser.urlencoded({
