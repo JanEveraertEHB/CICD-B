@@ -21,7 +21,7 @@ app.use(
 );
 
 app.get('/', (req, res) => {
-  res.send('Hello World!')
+  res.send('Hello World -- deployed!')
 })
 
 
@@ -93,12 +93,11 @@ app.post('/register', async (req, res) => {
 app.get('/join', async (req, res) => {
   await DatabaseHelper
     .table('items')
-    .join('lists', DatabaseHelper.raw('item.uuid::varchar'), 'lists.item_id')
+    .join('lists', DatabaseHelper.raw('item.list_id::varchar'), DatabaseHelper.raw('lists.uuid::varchar'))
     .select('lists.*', 'items.*')
     .then((data) => {
       res.send(data)
     })
-
 })
 
 app.get('/questions', AuthHelper.tokenValidator, async (req, res) => {
